@@ -1,0 +1,10 @@
+app.id=apm-dashboard
+apollo.bootstrap.enabled=true
+spring.aop.auto=true
+apollo.bootstrap.eagerLoad.enabled=true
+
+#中文乱码处理：https://www.jianshu.com/p/718826aee249
+spring.http.encoding.force=true
+spring.http.encoding.charset=UTF-8
+spring.http.encoding.enabled=true
+server.tomcat.uri-encoding=UTF-8

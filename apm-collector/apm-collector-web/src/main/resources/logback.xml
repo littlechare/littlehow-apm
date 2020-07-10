@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <property name="log_dir" value="logs"/>
+    <property name="default_log" value="${log_dir}/apm-default"/>
+    <property name="error_log" value="${log_dir}/common-error"/>
+    <property name="sql_log" value="${log_dir}/apm-sql"/>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="UTF-8">
+            <pattern>
+                %date{HH:mm:ss.SSS}, [%X{X-B3-TraceId:-} %X{X-B3-SpanId:-}] [%thread] %highlight(%-5level) [%marker] %cyan(%logger{15}) %method:%L - %highlight(%msg) %n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- 默认日志 按小时切分 -->
+    <!--&lt;!&ndash;参考https://logback.qos.ch/manual/appenders.html，如果fileNamePattern是以gz为结尾，那么会自动对历史日志进行gzip压缩，-->
+    <!--TimeBasedRollingPolicy supports automatic file compression. This feature is enabled if the value of the fileNamePattern option ends with .gz or .zip.-->
+    <!--错误日志时间保留长一点，保留30天，理论这个数据会比较小-->
+    <appender name="common-error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${error_log}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${error_log}.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %date{HH:mm:ss.SSS}, [%X{X-B3-TraceId:-} %X{X-B3-SpanId:-}] [%thread] %-5level [%marker] %logger{36} %method:%L - %msg %n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--https://www.jianshu.com/p/09f55766088d-->
+    <appender name="default" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${default_log}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${default_log}.%d{yyyy-MM-dd_HH}.log.gz</fileNamePattern>
+            <maxHistory>168</maxHistory>
+            <totalSizeCap>80GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %date{HH:mm:ss.SSS}, [%X{X-B3-TraceId:-} %X{X-B3-SpanId:-}] [%thread] %-5level [%marker] %logger{36} %method:%L - %msg %n
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- 异步输出 -->
+    <appender name="async-default" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <!--https://logback.qos.ch/manual/appenders.html#AsyncAppender-->
+        <queueSize>512</queueSize>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref="default"/>
+        <includeCallerData>true</includeCallerData>
+    </appender>
+
+
+    <!-- SQL -->
+    <appender name="sql" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${sql_log}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${sql_log}.%d{yyyy-MM-dd_HH}.log.gz</fileNamePattern>
+            <maxHistory>12</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %date{HH:mm:ss.SSS}, [%X{X-B3-TraceId:-} %X{X-B3-SpanId:-}] [%thread] %-5level [%marker] %logger{36} %method:%L - %msg %n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- SQL分离打印 -->
+    <logger name="jdbc.sqltiming" level="DEBUG" additivity="false">
+        <appender-ref ref="sql"/>
+        <appender-ref ref="common-error"/>
+    </logger>
+    <logger name="jdbc.connection" level="DEBUG" additivity="false">
+        <appender-ref ref="sql"/>
+        <appender-ref ref="common-error"/>
+    </logger>
+    <logger name="jdbc.sqlonly" level="OFF"/>
+    <logger name="jdbc.resultset" level="OFF"/>
+    <logger name="jdbc.audit" level="OFF"/>
+
+    <logger name="org.springframework.scheduling.support.TaskUtils" level="OFF">
+    </logger>
+
+    <!--druid如果执行sql出错打印日志,这个直接打印到async-default中，这样如果有出错也不会打印到common error中从而污染common error -->
+    <logger name="druid.sql.Statement" level="WARN" additivity="false">
+        <appender-ref ref="async-default"/>
+    </logger>
+
+    <!-- ROOT -->
+    <root level="${logging.level.root}">
+        <appender-ref ref="console"/>
+        <appender-ref ref="async-default"/>
+        <appender-ref ref="common-error"/>
+    </root>
+
+</configuration>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.littlehow.apm.collector.orm.support.mysql.dao.mapper.ext.CallStatisticsExtMapper">
+    <select id="selectCallSystemStatistics" resultType="com.littlehow.apm.collector.orm.model.CallStatisticsBo">
+        select server_name as serverName, sum(total_count) as totalCount,
+        sum(success_count) as successCount, sum(fail_count) as failCount
+        from call_statistics
+        where period between #{startTime} and #{endTime}
+        group by server_name
+        order by totalCount desc
+        limit #{top}
+    </select>
+
+    <select id="selectCallInterfaceStatistics" resultType="com.littlehow.apm.collector.orm.model.CallStatisticsBo">
+        select uri as uri, server_name as serverName, sum(total_count) as totalCount,
+        sum(success_count) as successCount, sum(fail_count) as failCount
+        from call_statistics
+        where period between #{startTime} and #{endTime}
+        <if test="serverName != null">
+            server_name = #{serverName}
+        </if>
+        group by uri,server_name
+        order by totalCount desc
+        limit #{top}
+    </select>
+
+    <select id="selectCallSystemDetail" resultType="com.littlehow.apm.collector.orm.model.CallStatisticsBo">
+        select server_name as serverName, period, sum(total_count) as totalCount,
+        sum(success_count) as successCount, sum(fail_count) as failCount
+        from call_statistics where server_name = #{serverName}
+        and period between #{startTime} and #{endTime}
+        group by server_name, period order by period desc
+    </select>
+
+    <select id="selectCallInterfaceDetail" resultType="com.littlehow.apm.collector.orm.model.CallStatisticsBo">
+        select server_name as serverName, uri, period, sum(total_count) as totalCount,
+        sum(success_count) as successCount, sum(fail_count) as failCount
+        from call_statistics where uri = #{uri}
+        and period between #{startTime} and #{endTime}
+        group by server_name, period order by period desc
+    </select>
+</mapper>
