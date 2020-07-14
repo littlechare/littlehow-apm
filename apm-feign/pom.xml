@@ -19,6 +19,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.littlehow.springcloud</groupId>
+            <artifactId>apm-register</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>io.github.openfeign.form</groupId>
             <artifactId>feign-form</artifactId>
         </dependency>

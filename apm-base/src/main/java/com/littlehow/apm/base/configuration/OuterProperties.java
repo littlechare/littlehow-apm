@@ -1,5 +1,6 @@
 package com.littlehow.apm.base.configuration;
 
+import com.littlehow.apm.base.util.IpUtils;
 import com.littlehow.apm.base.web.SelfServerContext;
 import lombok.Getter;
 import org.springframework.beans.factory.InitializingBean;
@@ -78,6 +79,11 @@ public class OuterProperties implements InitializingBean {
     private int threadPoolQueueSize;
 
     /**
+     * 本机ip信息
+     */
+    private String selfIp;
+
+    /**
      * 系统配置
      */
     @Autowired
@@ -86,5 +92,14 @@ public class OuterProperties implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         SelfServerContext.setProperties(this);
+    }
+
+    @Value("${apm.host.ip:}")
+    private void setSelfIp(String ip) {
+        if (IpUtils.verifyIpv4(ip)) {
+            this.selfIp = ip;
+        } else {
+            this.selfIp = IpUtils.getIp();
+        }
     }
 }

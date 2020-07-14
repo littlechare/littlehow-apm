@@ -43,7 +43,7 @@ public class DesensitizationUtil {
      */
     private static Pattern buildPattern(List<String> desenBodyList) {
         String desensitizationBodyString = desenBodyList.stream().collect(Collectors.joining("|", "\\s*(", ")\\s*"));
-        return Pattern.compile("\"" + desensitizationBodyString + "\"\\s*:\\s*(\")?([\\w:+=/\\s]+)", Pattern.CASE_INSENSITIVE);
+        return Pattern.compile("\"" + desensitizationBodyString + "\"\\s*:\\s*(\")?(.+?)[\",\\s}]", Pattern.CASE_INSENSITIVE);
     }
 
     /**
@@ -87,14 +87,16 @@ public class DesensitizationUtil {
 
     /**
      * 脱敏示例
-     * requestBody {"code":"101655", "email":"wangshow12@126.com", "name":"littlehow", "password":"16398729"}
+     * 可能不满足所有的json脱敏场景，如果遇到脱敏失败或脱敏不正确的地方，可自行修改本脱敏方法
+     * requestBody {"code":"101655", "email":"wangshow12@126.com", "name":"littlehow", "password":"我的密码16398729"}
      * responseBody {"code":"000000", "msg":"success", "data":{"userNo":"1234", "accessKey":"asdf1231ac1234242ssdfAqw32", "token": "1234sdfasdfwe123"}}
+     *
      * @param args -
      */
     public static void main(String[] args) {
         // 对请求体进行脱敏
-        String requestBody = "{\"code\":\"101655\", \"email\":\"wangshow12@126.com\", \"name\":\"littlehow\", \"password\":\"16398729\"}";
-        // {"code":"1***5", "email":"w***2@126.com", "name":"littlehow", "password":"1***9"}
+        String requestBody = "{\"code\":\"101655\", \"email\":\"wangshow12@126.com\", \"name\":\"littlehow\", \"password\":\"我的密码16398729\"}";
+        // {"code":"1***5", "email":"w***m", "name":"littlehow", "password":"我***9"}
         System.out.println(desensitizationRequest(requestBody));
 
         // 对响应体进行脱敏,code会被保留

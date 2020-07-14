@@ -13,11 +13,16 @@ import java.util.Map;
 
 /**
  * 获取本系统运行所在环境的ip地址
+ * 简单验证ip是否为ipv4地址
  * @author littlehow
  */
 public class IpUtils {
     private static String ip;
 
+    /**
+     * 获取本机ip地址
+     * @return -
+     */
     public static String getIp(){
         if (ip != null) {
             return ip;
@@ -56,6 +61,28 @@ public class IpUtils {
         }
     }
 
+    /**
+     * 验证是否为合法ipv4地址
+     * @param ip -
+     * @return -
+     */
+    public static boolean verifyIpv4(String ip) {
+        if (StringUtils.hasText(ip)) {
+            String[] vv = ip.split("\\.");
+            if (vv.length != 4) {
+                return false;
+            }
+            for (String v : vv) {
+                int value = Integer.parseInt(v);
+                if (value > 255 || value < 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     private static String getPriority(Map<String, String> targetIp) {
         if (CollectionUtils.isEmpty(targetIp)) return null;
         //优先获取eth0的网卡地址
@@ -69,5 +96,4 @@ public class IpUtils {
         }
         return ip;
     }
-
 }

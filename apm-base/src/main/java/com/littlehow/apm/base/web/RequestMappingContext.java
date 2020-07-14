@@ -45,7 +45,7 @@ public class RequestMappingContext {
         if (excludeClass.contains(target.getName())) {
             return;
         }
-        RequestMappingMeta meta = RequestMappingMeta.getMeta(method, target.getName(), uri);
+        RequestMappingMeta meta = RequestMappingMeta.getMeta(method, target, uri);
         mappingMataCache.put(uri, meta);
         methodMetaCache.put(meta.getClassName() + "." + meta.getMethodName(), meta);
     }

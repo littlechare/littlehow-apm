@@ -3,7 +3,6 @@ package com.littlehow.apm.base.web;
 import com.littlehow.apm.base.ApplicationInfo;
 import com.littlehow.apm.base.ServerInfo;
 import com.littlehow.apm.base.configuration.OuterProperties;
-import com.littlehow.apm.base.util.IpUtils;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.util.StringUtils;
 
@@ -63,7 +62,7 @@ public class SelfServerContext {
         }
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setApplicationName(outerProperties.getApplicationName());
-        serverInfo.setIp(IpUtils.getIp());
+        serverInfo.setIp(outerProperties.getSelfIp());
         serverInfo.setPort(serverProperties.getPort() + "");
         setServerInfo(serverInfo);
         if (outerProperties.isSelfServerCache()) {
