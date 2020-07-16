@@ -9,9 +9,20 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.littlehow.springcloud</groupId>
     <artifactId>apm-test-promote-server</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.littlehow.springcloud</groupId>
+            <artifactId>apm-test-promote-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
 
+        <dependency>
+            <groupId>com.littlehow.springcloud</groupId>
+            <artifactId>apm-test-base-server</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>

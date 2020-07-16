@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.TemporalUnit;
 
 /**
  *
@@ -41,19 +42,20 @@ public class JsonConfig {
     public static FastJsonConfig getFastJsonConfig() {
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
         fastJsonConfig.setSerializerFeatures(
-                //SerializerFeature.DisableCircularReferenceDetect,
-                //SerializerFeature.WriteMapNullValue,
-                //SerializerFeature.SortField,
-                //SerializerFeature.MapSortField,
-                //SerializerFeature.WriteBigDecimalAsPlain,
-                //SerializerFeature.WriteNullListAsEmpty,
-                //SerializerFeature.WriteNullStringAsEmpty
+                SerializerFeature.DisableCircularReferenceDetect,
+                SerializerFeature.WriteMapNullValue,
+                SerializerFeature.SortField,
+                SerializerFeature.MapSortField,
+                SerializerFeature.WriteBigDecimalAsPlain,
+                SerializerFeature.WriteNullListAsEmpty,
+                SerializerFeature.WriteNullStringAsEmpty
         );
         ValueFilter filter = (object, name, value) -> {
             if(value instanceof BigDecimal){
                 return ((BigDecimal) value).stripTrailingZeros().toPlainString();
             } else if (value instanceof LocalDateTime) {
-                return ((LocalDateTime) value).toEpochSecond(zoneOffset) * 1000L;
+                LocalDateTime localDateTime = (LocalDateTime) value;
+                return localDateTime.toInstant(zoneOffset).toEpochMilli();
             } else if (value instanceof LocalDate) {
                 return ((LocalDate) value).toEpochDay() * DAY - zoneOffsetMilliseconds;
             }
@@ -63,5 +65,4 @@ public class JsonConfig {
         fastJsonConfig.setSerializeFilters(filter);
         return fastJsonConfig;
     }
-
 }

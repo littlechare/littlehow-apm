@@ -27,6 +27,8 @@ public class RequestMappingContext {
         excludeClass.add("springfox.documentation.swagger.web.ApiResourceController");
         // springboot内置相关
         excludeClass.add("org.springframework.boot.autoconfigure.web.BasicErrorController");
+        // 自定义服务上下线相关
+        excludeClass.add("com.littlehow.apm.register.eureka.EurekaManagementController");
     }
 
     /**

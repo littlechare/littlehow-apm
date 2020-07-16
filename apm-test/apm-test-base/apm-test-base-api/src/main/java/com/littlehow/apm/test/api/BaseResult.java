@@ -43,6 +43,10 @@ public class BaseResult {
         return result;
     }
 
+    public static String badGateway(String traceId) {
+        return "bad gateway -> " + traceId;
+    }
+
     public boolean isSuccess() {
         return SUCCESS_CODE.equals(this.code);
     }

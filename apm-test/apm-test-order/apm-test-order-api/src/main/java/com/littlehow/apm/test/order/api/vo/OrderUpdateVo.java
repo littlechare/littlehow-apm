@@ -24,9 +24,4 @@ public class OrderUpdateVo extends OrderNoVO {
     @Pattern(regexp = "\\d{1,2}", message = "状态必须是1位或2位的数字")
     @ApiModelProperty("订单状态")
     private String status;
-
-    @ApiModelProperty("订单数量(支持纠正订单数量)")
-    @NotNull(message = "数量不可为空")
-    @Min(value = 1, message = "数量最小为1")
-    private Integer count;
 }

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
  *
  * @author littlehow
  */
-@ComponentScan("com.littlehow.apm")
+@ComponentScan(basePackages = {"com.littlehow.apm.base", "com.littlehow.apm.feign"})
 public class ApmApplication {
     private static ClassLoader loader = new ApmClassLoader();
     static {

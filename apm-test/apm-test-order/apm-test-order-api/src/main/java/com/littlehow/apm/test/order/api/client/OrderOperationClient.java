@@ -1,5 +1,6 @@
 package com.littlehow.apm.test.order.api.client;
 
+import com.littlehow.apm.test.order.api.vo.BatchOrderCreateVO;
 import com.littlehow.apm.test.order.api.vo.OrderCreateVO;
 import com.littlehow.apm.test.order.api.vo.OrderUpdateVo;
 import io.swagger.annotations.Api;
@@ -21,6 +22,10 @@ public interface OrderOperationClient {
     @ApiOperation("下单操作")
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     String createOrder(OrderCreateVO orderCreate);
+
+    @ApiOperation("下单操作")
+    @RequestMapping(value = "/create/batch", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    String createBatchOrder(BatchOrderCreateVO batchOrderCreate);
 
     @ApiOperation("修改订单")
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
