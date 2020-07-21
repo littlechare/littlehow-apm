@@ -43,7 +43,7 @@ public class DesensitizationUtil {
      */
     private static Pattern buildPattern(List<String> desenBodyList) {
         String desensitizationBodyString = desenBodyList.stream().collect(Collectors.joining("|", "\\s*(", ")\\s*"));
-        return Pattern.compile("\"" + desensitizationBodyString + "\"\\s*:\\s*(\")?(.+?)[\",\\s}]", Pattern.CASE_INSENSITIVE);
+        return Pattern.compile("\"" + desensitizationBodyString + "\"\\s*:\\s*(\")?([\\w\\s\\u4e00-\\u9fa5#$!@+-<>?~&*^%\\{\\}\\[\\].]+)", Pattern.CASE_INSENSITIVE);
     }
 
     /**
@@ -95,7 +95,7 @@ public class DesensitizationUtil {
      */
     public static void main(String[] args) {
         // 对请求体进行脱敏
-        String requestBody = "{\"code\":\"101655\", \"email\":\"wangshow12@126.com\", \"name\":\"littlehow\", \"password\":\"我的密码16398729\"}";
+        String requestBody = "{\"code\":\"101655\", \"email\":\"wangshow12@126.com\", \"name\":\"littlehow\", \"password\":\"我的密码#@#$@#$}{16398729\"}";
         // {"code":"1***5", "email":"w***m", "name":"littlehow", "password":"我***9"}
         System.out.println(desensitizationRequest(requestBody));
 
