@@ -34,7 +34,7 @@
 ### 启动类修改
 > 启动类需要继承收集系统的一个类
 
-> 目的主要是为了优先加载org.springframework.cloud.netflix.feign.ribbon.LoadBalancerFeignClient
+> 目的主要是为了优先加载feign相关的类
 
 > 因为在sleuth下LoadBalancerFeignClient被其wrapper之后就无法进行继承或其他操作，因为sleuth是自己new的对象，所以就只能有为数不多的方式进行改变，如attach(java.lang.instrument.Instrumentation)、重新改变类后打包发到自己的maven仓库、改后编译出字节码进行自己加载
 
