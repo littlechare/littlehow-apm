@@ -15,11 +15,12 @@ public class ApmApplication {
         // 加载资源类(主要为了初始化类)
         try {
             // feign实际调用前后的资源类,里面做了前后advice外接处理, 进行类资源注册
-            Class.forName("com.littlehow.apm.feign.LoadBalancerFeignClientSource");
+            Class.forName("com.littlehow.apm.feign.SynchronousMethodHandlerSource");
             // feign生成代理核心类，对pathVariable进行提前获取，避免同一接口被解释成多个
             // 如/user/{userNo}/info 如果1001和1002调用，分析会出现两个，所以再此处拿出原始path解析
             // 进行类资源注册
             Class.forName("com.littlehow.apm.feign.ReflectiveFeignSource");
+
             // 对接口注解扫描忽略的类，如接入其他系统的client，也可能使用RequestMapping注解，这样就可能误把其他系统接口解析成自己的接口
             Class.forName("com.littlehow.apm.feign.FeignMappingIgnored");
         } catch (ClassNotFoundException e) {
@@ -31,7 +32,7 @@ public class ApmApplication {
         try {
             // 优先加载资源类
             loader.loadClass(ReflectiveFeignSource.className);
-            loader.loadClass(LoadBalancerFeignClientSource.className);
+            loader.loadClass(SynchronousMethodHandlerSource.className);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

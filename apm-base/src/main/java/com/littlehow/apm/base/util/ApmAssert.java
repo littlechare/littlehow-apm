@@ -2,6 +2,7 @@ package com.littlehow.apm.base.util;
 
 
 import com.littlehow.apm.base.exception.ApmAssertException;
+import org.springframework.util.StringUtils;
 
 /**
  * 主要是支持值转换和取消爬取异常栈
@@ -15,9 +16,15 @@ public class ApmAssert {
         }
     }
 
-    public static void notNull(Object obj, String message, Object... argus) {
+    public static void notNull(Object obj, String message, Object... args) {
         if (obj == null) {
-            throw new ApmAssertException(message, argus);
+            throw new ApmAssertException(message, args);
+        }
+    }
+
+    public static void hasText(String str, String message, Object... args) {
+        if (!StringUtils.hasText(str)) {
+            throw new ApmAssertException(message, args);
         }
     }
 }

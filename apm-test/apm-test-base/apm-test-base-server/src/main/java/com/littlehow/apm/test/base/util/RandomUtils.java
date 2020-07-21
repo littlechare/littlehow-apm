@@ -12,6 +12,8 @@ import java.util.Random;
  * @author littlehow
  */
 public class RandomUtils {
+
+    private static String[] phonePrefix = {"138", "133", "135", "139", "136", "137", "152", "155", "158", "188", "186", "177"};
     // 不需要考虑线程安全问题，此处仅仅为测试
     private static Random random = new Random();
 
@@ -42,6 +44,14 @@ public class RandomUtils {
 
     public static String randomStatus() {
         return String.valueOf(random.nextInt(10) + 1);
+    }
+
+    public static String random4digtal() {
+        return String.format("%04d", random.nextInt(10000));
+    }
+
+    public static String randomMobilePhone() {
+        return phonePrefix[random.nextInt(phonePrefix.length)] + random4digtal() + random4digtal();
     }
 
 }

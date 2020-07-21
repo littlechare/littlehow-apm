@@ -8,6 +8,7 @@ import com.littlehow.apm.test.promote.api.vo.QueryPromoteReqVO;
 import com.littlehow.apm.test.promote.service.PromoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -35,5 +36,10 @@ public class PromoteController implements PromoteClient {
                 .stream()
                 .map(o -> ApmBeanUtils.copyNewOnNull(o, PromoteVO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Integer queryShopPromoteCount(@RequestParam String shopNo) {
+        return promoteService.getShopPromoteCount(shopNo);
     }
 }

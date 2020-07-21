@@ -40,6 +40,10 @@ public class PromoteService {
         return promoteBOS;
     }
 
+    public Integer getShopPromoteCount(String shopNo) {
+        return randomCount(40, 150);
+    }
+
     private PromoteBO createPromote(String itemNo) {
         PromoteBO promoteBO = new PromoteBO();
         promoteBO.setItemNo(itemNo);

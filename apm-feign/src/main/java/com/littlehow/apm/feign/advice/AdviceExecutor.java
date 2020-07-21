@@ -2,7 +2,6 @@ package com.littlehow.apm.feign.advice;
 
 
 import com.littlehow.apm.base.ServerInfo;
-import com.littlehow.apm.base.web.RemoteServerContext;
 import com.littlehow.apm.base.web.SelfServerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -24,7 +23,7 @@ public class AdviceExecutor {
 
     private static ThreadLocal<String> PRE_SERVICE_NAME = new ThreadLocal<>();
 
-    private static final String SERVICE_NAME_ATTRIBUTE = "SERVICE_NAME_ATTRIBUTE";
+    public static final String SERVICE_NAME_ATTRIBUTE = "SERVICE_NAME_ATTRIBUTE";
 
     /**
      * 注册processor
@@ -47,7 +46,6 @@ public class AdviceExecutor {
             PRE_SERVICE_NAME.set(serviceName);
         }
     }
-
 
     private static Object[] getAndRemoveParam() {
         Object[] params = PRE_PARAM_CACHE.get();
@@ -89,10 +87,6 @@ public class AdviceExecutor {
      * @param context    --  请求信息
      */
     public static void postExecute(WebAdviceContext context) {
-        ServerInfo remote = RemoteServerContext.getRemoteServer(context.getRequest().url(), context.attribute(SERVICE_NAME_ATTRIBUTE));
-        context.setRemote(remote);
-        //及时清除远程host信息
-        RemoteServerContext.clearHostPort();
         for (CallFeignProcessor processor : processors) {
             try {
                 processor.postExecute(context);

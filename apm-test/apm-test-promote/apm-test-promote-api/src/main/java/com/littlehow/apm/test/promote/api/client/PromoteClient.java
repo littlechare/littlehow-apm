@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -28,4 +29,8 @@ public interface PromoteClient {
     @ApiOperation("查询活动信息")
     @RequestMapping(value = "/query/batch", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     List<PromoteVO> queryPromoteBatch(QueryPromoteBatchReqVO req);
+
+    @ApiOperation("查询活动信息")
+    @RequestMapping(value = "/shop/count", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    Integer queryShopPromoteCount(@RequestParam("shopNo") String shopNo);
 }

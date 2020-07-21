@@ -1,37 +1,47 @@
 package com.littlehow.apm.base.web;
 
-import lombok.Getter;
+import com.littlehow.apm.base.util.IpUtils;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * 根据feign提供的url分析出系统以及uri
+ * 根据feign提供分析直连还是非直连
  * @author littlehow
  */
-@Getter
+@Slf4j
 public class MyApplicationUrl {
 
-    private static final Pattern HTTP_APPLICATION_PATTERN = Pattern.compile("http(s)?://([\\w-.:]+)(/.+)");
-
-    private String applicationName;
-
-    private String uri;
-
-    public MyApplicationUrl(String applicationUrl) {
-        Matcher matcher = HTTP_APPLICATION_PATTERN.matcher(applicationUrl);
-        if (matcher.find()) {
-            this.applicationName = matcher.group(2);
-            this.uri = matcher.group(3);
-            int index = uri.indexOf("?");
-            if (index > 0) {
-                this.uri = this.uri.substring(0, index);
+    public static String ipPort(String url, String serverName) {
+        if (url == null) return null;
+        url = url.replace("http://", "").replace("https://", "");
+        try {
+            while (url.startsWith("/")) {
+                url = url.substring(1);
             }
+            if (url.contains("/")) {
+                url = url.substring(0, url.indexOf("/"));
+            }
+            if (serverName != null && serverName.equalsIgnoreCase(url) && !url.contains(":")) {
+                return null;
+            }
+            String[] ipPort = url.split(":");
+            String ip = getRealIp(ipPort[0]);
+            if (ip != null) {
+                return ip + (ipPort.length > 1 ? ":" + ipPort[1] : "");
+            }
+        } catch (Throwable t) {
+            log.warn("url=" + url, t);
         }
+        return null;
     }
 
-    @Override
-    public String toString() {
-        return applicationName + "->" + uri;
+    private static String getRealIp(String ip) {
+        if ("localhost".equals(ip)) {
+            return IpUtils.getIp();
+        }
+        if (IpUtils.verifyIpv4(ip)) {
+            return ip;
+        }
+        return null;
     }
 }
