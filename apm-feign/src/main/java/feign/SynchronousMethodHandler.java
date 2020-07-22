@@ -153,9 +153,8 @@ final class SynchronousMethodHandler implements MethodHandler {
                 // ensure the request is set. TODO: remove in Feign 10
                 response.toBuilder().request(request).build();
             }
-            if (response.body() == null
-                    || response.body().length() == null
-                    || response.body().length() <= 0) {
+            // 只要body不为空，就将其设置为可重复读
+            if (response.body() == null) {
                 return response;
             }
             // Ensure the response body is disconnected
