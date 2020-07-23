@@ -28,7 +28,7 @@ public interface UserClient {
     @RequestMapping(value = "/info/{userNo}", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     UserInfoVO getInfo(String userNo);
 
-    @ApiOperation("查询用户信息")
+    @ApiOperation("查询账户信息")
     @RequestMapping(value = "/account/{userNo}", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     UserAccountVO getAccount(String userNo);
 }

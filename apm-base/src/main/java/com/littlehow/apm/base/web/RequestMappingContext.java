@@ -25,6 +25,7 @@ public class RequestMappingContext {
     static {
         // swagger相关api
         excludeClass.add("springfox.documentation.swagger.web.ApiResourceController");
+        excludeClass.add("com.github.xiaoymin.knife4j.spring.web.Knife4jController");
         // springboot内置相关
         excludeClass.add("org.springframework.boot.autoconfigure.web.BasicErrorController");
         // 自定义服务上下线相关

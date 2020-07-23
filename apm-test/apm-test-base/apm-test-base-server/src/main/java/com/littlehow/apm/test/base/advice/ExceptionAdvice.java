@@ -2,6 +2,7 @@ package com.littlehow.apm.test.base.advice;
 
 import com.littlehow.apm.base.exception.ApmBizException;
 import com.littlehow.apm.test.api.BaseResult;
+import feign.codec.DecodeException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.cloud.sleuth.Span;
@@ -21,7 +22,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.websocket.DecodeException;
 import java.io.IOException;
 import java.util.List;
 

@@ -52,7 +52,7 @@ public class RestTemplateUtil {
         HttpHeaders requestHeaders = new HttpHeaders();
         String traceId = MDC.get(Span.TRACE_ID_NAME);
         String spanId = MDC.get(Span.SPAN_ID_NAME);
-        if (StringUtils.hasText(traceId)) {
+        if (!StringUtils.hasText(traceId)) {
             traceId = Long.toHexString(System.currentTimeMillis());
             spanId = traceId;
             // 可以选择放入MDC，但需要记得调用完结后进行清理

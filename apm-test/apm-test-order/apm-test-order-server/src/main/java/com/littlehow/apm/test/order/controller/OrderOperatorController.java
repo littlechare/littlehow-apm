@@ -41,7 +41,7 @@ public class OrderOperatorController implements OrderOperationClient {
     }
 
     @Override
-    public void updateOrder(OrderUpdateVo orderUpdate) {
+    public void updateOrder(@RequestBody @Valid OrderUpdateVo orderUpdate) {
         log.info("修改订单:{}", JSONObject.toJSONString(orderUpdate));
         orderOperatorService.updateOrder(orderUpdate.getOrderNo(), orderUpdate.getStatus());
     }

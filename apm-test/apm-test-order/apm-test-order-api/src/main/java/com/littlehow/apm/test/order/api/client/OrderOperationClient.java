@@ -23,7 +23,7 @@ public interface OrderOperationClient {
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     String createOrder(OrderCreateVO orderCreate);
 
-    @ApiOperation("下单操作")
+    @ApiOperation("批量下单操作")
     @RequestMapping(value = "/create/batch", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     String createBatchOrder(BatchOrderCreateVO batchOrderCreate);
 

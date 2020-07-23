@@ -1,5 +1,6 @@
 package com.littlehow.apm.test.boss;
 
+import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import com.littlehow.apm.feign.ApmApplication;
 import com.spring4all.swagger.EnableSwagger2Doc;
 import org.springframework.boot.SpringApplication;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 @EnableEurekaClient
 @SpringBootApplication
 @EnableSwagger2Doc
+@EnableKnife4j
 @PropertySource("classpath:swagger.properties")
 @ComponentScan(basePackages = {"com.littlehow.apm.test.base",
         "com.littlehow.apm.test.boss", "com.littlehow.apm.register.eureka"})
