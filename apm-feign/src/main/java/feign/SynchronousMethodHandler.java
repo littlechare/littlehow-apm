@@ -15,10 +15,6 @@
  */
 package feign;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import com.littlehow.apm.base.ServerInfo;
 import com.littlehow.apm.base.util.StopWatch;
 import com.littlehow.apm.base.web.MyApplicationUrl;
@@ -30,6 +26,10 @@ import feign.Request.Options;
 import feign.codec.DecodeException;
 import feign.codec.Decoder;
 import feign.codec.ErrorDecoder;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static feign.FeignException.errorExecuting;
 import static feign.FeignException.errorReading;
@@ -85,7 +85,6 @@ final class SynchronousMethodHandler implements MethodHandler {
                 if (logLevel != Logger.Level.NONE) {
                     logger.logRetry(metadata.configKey(), logLevel);
                 }
-                continue;
             }
         }
     }
@@ -93,25 +92,19 @@ final class SynchronousMethodHandler implements MethodHandler {
     Object executeAndDecode(RequestTemplate template) throws Throwable {
         Request request = targetRequest(template);
         StopWatch watch = StopWatch.getAndStart();
-        Throwable t = null;
         Response response;
         WebAdviceContext context = WebAdviceContext.getInstance(request, watch.getStartTime());
+        String ipPort = MyApplicationUrl.ipPort(target.url(), target.name());
+        if (ipPort != null) {
+            RemoteServerContext.setHostPort(ipPort);
+        }
+        AdviceExecutor.preExecute(context);
         try {
-            String ipPort = MyApplicationUrl.ipPort(target.url(), target.name());
-            if (ipPort != null) {
-                RemoteServerContext.setHostPort(ipPort);
-            }
-            AdviceExecutor.preExecute(context);
             response = execute(request);
-            response = repetRead(response);
             context.setResponse(response);
-            if (Response.class != metadata.returnType()) {
-                return decodeResponse(response);
-            }
-            return response;
-        } catch (Throwable t1) {
-            t = t1;
-            throw t1;
+        } catch (Throwable t) {
+            context.setException(t);
+            throw t;
         } finally {
             // 获取远程调用地址信息, 判断是否有提前服务名
             String url = template.url();
@@ -119,11 +112,15 @@ final class SynchronousMethodHandler implements MethodHandler {
                 url = context.attribute(AdviceExecutor.SERVICE_NAME_ATTRIBUTE);
             }
             ServerInfo remoteServer = RemoteServerContext.getRemoteServer(target.name(), url);
-            context.setException(t);
             context.setRemote(remoteServer);
             context.setDuring(watch.stop().during());
             AdviceExecutor.postExecute(context);
         }
+
+        if (Response.class != metadata.returnType()) {
+            return decodeResponse(response);
+        }
+        return response;
     }
 
     Response execute(Request request) {
@@ -153,11 +150,10 @@ final class SynchronousMethodHandler implements MethodHandler {
                 // ensure the request is set. TODO: remove in Feign 10
                 response.toBuilder().request(request).build();
             }
-            // 只要body不为空，就将其设置为可重复读
             if (response.body() == null) {
                 return response;
             }
-            // Ensure the response body is disconnected
+            // 将body全部设置为可重复读
             byte[] bodyData = Util.toByteArray(response.body().asInputStream());
             // 这里操作后in其实已经close, 所以不需要继续close
             shouldClose = false;
@@ -235,23 +231,5 @@ final class SynchronousMethodHandler implements MethodHandler {
                     logLevel, md, buildTemplateFromArgs, options, decoder,
                     errorDecoder, decode404);
         }
-    }
-
-    /**
-     * 将其设置为可重复度
-     * @param response - 设置为空重复读
-     * @return
-     */
-    private Response repetRead(Response response) {
-        try {
-            int status = response.status();
-            if (response.body() != null && !response.body().isRepeatable()
-                    && status != 204 && status != 205) {
-                return response.toBuilder().body(Util.toByteArray(response.body().asInputStream())).build();
-            }
-        } catch (Exception e) {
-            // skip
-        }
-        return response;
     }
 }
