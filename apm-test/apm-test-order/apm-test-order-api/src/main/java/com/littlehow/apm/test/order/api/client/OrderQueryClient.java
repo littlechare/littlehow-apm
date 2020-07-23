@@ -31,7 +31,7 @@ public interface OrderQueryClient {
 
     @ApiOperation("查询用户订单信息(最新10条)")
     @RequestMapping(value = "/{userNo}/order/ten", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-    List<OrderVO> queryOrderByUserNo(String userNo);
+    List<OrderVO> queryOrderByUserNo(@PathVariable("userNo") String userNo);
 
     @ApiOperation("分页查询订单信息")
     @RequestMapping(value = "/order/paging", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
