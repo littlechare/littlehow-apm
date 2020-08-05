@@ -2,6 +2,7 @@ package com.littlehow.apm.feign.advice;
 
 
 import com.littlehow.apm.base.ServerInfo;
+import com.littlehow.apm.base.util.TraceUtil;
 import com.littlehow.apm.base.web.SelfServerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -24,6 +25,8 @@ public class AdviceExecutor {
     private static ThreadLocal<String> PRE_SERVICE_NAME = new ThreadLocal<>();
 
     public static final String SERVICE_NAME_ATTRIBUTE = "SERVICE_NAME_ATTRIBUTE";
+
+    public static final String SET_TRACE_ID = "SET_TRACE_ID";
 
     /**
      * 注册processor
@@ -64,9 +67,16 @@ public class AdviceExecutor {
      * @param context  -- 上下文信息
      */
     public static void preExecute(WebAdviceContext context) {
+        String traceId = MDC.get(TRACE_ID_NAME);
+        String spanId = MDC.get(SPAN_ID_NAME);
+        if (!StringUtils.hasText(traceId)) {
+            traceId = TraceUtil.getTraceId();
+            spanId = traceId;
+            setTraceId(traceId, context);
+        }
         //设置traceId和spanId, 因为使用sleuth，所以此处必定有值
-        context.attribute(TRACE_ID_NAME, MDC.get(TRACE_ID_NAME));
-        context.attribute(SPAN_ID_NAME, MDC.get(SPAN_ID_NAME));
+        context.attribute(TRACE_ID_NAME, traceId);
+        context.attribute(SPAN_ID_NAME, spanId);
         context.attribute(PRE_PARAM, getAndRemoveParam());
         context.attribute(SERVICE_NAME_ATTRIBUTE, getAndRemoveServiceName());
         ServerInfo serverInfo = SelfServerContext.getSelfServerInfo(context.getRequest().url());
@@ -96,6 +106,24 @@ public class AdviceExecutor {
                 }
             }
         }
+        removeTraceId(context);
     }
 
+    private static void setTraceId(String traceId, WebAdviceContext context) {
+        MDC.put(TRACE_ID_NAME, traceId);
+        MDC.put(SPAN_ID_NAME, traceId);
+        context.attribute(SET_TRACE_ID, true);
+    }
+
+    private static void removeTraceId(WebAdviceContext context) {
+        if (getSetTraceId(context)) {
+            MDC.remove(TRACE_ID_NAME);
+            MDC.remove(SPAN_ID_NAME);
+        }
+    }
+
+    private static boolean getSetTraceId(WebAdviceContext context) {
+        Object obj = context.attribute(SET_TRACE_ID);
+        return obj != null && (boolean) obj;
+    }
 }
