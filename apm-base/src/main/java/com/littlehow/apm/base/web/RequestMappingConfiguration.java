@@ -1,5 +1,6 @@
 package com.littlehow.apm.base.web;
 
+import com.littlehow.apm.base.util.ApmReflectUtil;
 import org.springframework.boot.autoconfigure.web.WebMvcRegistrations;
 import org.springframework.boot.autoconfigure.web.WebMvcRegistrationsAdapter;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -54,9 +56,9 @@ public class RequestMappingConfiguration {
         protected boolean isHandler(Class<?> beanType) {
             boolean handler = super.isHandler(beanType) && !hasIgnored(beanType);
             if (handler) {
-                Method[] methods = beanType.getMethods();
+                List<Method> methods = ApmReflectUtil.getCustomerMethods(beanType);
                 for (Method method : methods) {
-                    if (!Modifier.isPublic(method.getModifiers()) || Modifier.isStatic(method.getModifiers())) {
+                    if (Modifier.isStatic(method.getModifiers())) {
                         continue;
                     }
                     RequestMappingInfo mappingInfo = super.getMappingForMethod(method, beanType);
