@@ -84,6 +84,8 @@ apm.application.name.cn=系统中文名称
 # 如com.littlehow，这样就不会将org.springframework这样的识别成自有系统调用
 # 打包时已将本系统表示包前缀打入，所以不是新包前缀，不需要进行配置该项
 # 具体打入信息在com.littlehow.apm.base.web.SelfServerContext中
+# 目前默认配置为com.littlehow; 可以修改SelfServerContext类，也可以在此处配置
+# 自己的包名前缀，有别于使用的第三方包
 apm.application.package.start=
 
 # 可选配置项
